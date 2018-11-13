@@ -1,5 +1,6 @@
 # Data-Mining  Homeworks
 
-### 1. Shingling, MinHash and LSH algorithms
+### 1. Shingling, MinHashing and LSH algorithms
 
-### 2. Finding frequent itemsets (a-priori algorithm)
+### 2. Finding frequent itemsets and association rules (a-priori algorithm)
+
