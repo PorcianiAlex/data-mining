@@ -50,10 +50,14 @@ public class Jabeja {
    */
   private void saCoolDown(){
     // TODO for second task
-    if (T > 1)
-      T -= config.getDelta();
-    if (T < 1)
-      T = 1;
+//    if (T > 1)
+//      T -= config.getDelta();
+//    if (T < 1)
+//      T = 1;
+    double T_min = 0.000001;
+    if (T > T_min) {
+      T = T * config.getDelta();
+    }
   }
 
   /**
@@ -66,28 +70,71 @@ public class Jabeja {
 
     if (config.getNodeSelectionPolicy() == NodeSelectionPolicy.HYBRID
             || config.getNodeSelectionPolicy() == NodeSelectionPolicy.LOCAL) {
-      // swap with random neighbors
-      // TODO
+        // swap with random neighbors
+        //row 3 pseudocode
+        partner = findPartner(nodeId, getNeighbors(nodep));
+
     }
 
     if (config.getNodeSelectionPolicy() == NodeSelectionPolicy.HYBRID
             || config.getNodeSelectionPolicy() == NodeSelectionPolicy.RANDOM) {
-      // if local policy fails then randomly sample the entire graph
-      // TODO
+        // if local policy fails then randomly sample the entire graph
+        // row 5 pseudocode
+        if (partner == null) {
+            partner = findPartner(nodeId, getNeighbors(nodep));
+        }
     }
 
     // swap the colors
-    // TODO
+    if (partner != null) {
+        int colorp = nodep.getColor();
+        nodep.setColor(partner.getColor());
+        partner.setColor(colorp);
+
+        if (colorp != nodep.getColor()) this.numberOfSwaps++;
+    }
   }
 
   public Node findPartner(int nodeId, Integer[] nodes){
-
+    Random random = new Random();
     Node nodep = entireGraph.get(nodeId);
 
     Node bestPartner = null;
     double highestBenefit = 0;
 
-    // TODO
+    double alpha = config.getAlpha();
+
+    for (int qid: nodes){
+      Node nodeq = entireGraph.get(qid);
+
+      int dpp = getDegree(nodep, nodep.getColor());
+      int dqq = getDegree(nodeq, nodeq.getColor());
+      double olddeg = Math.pow(dpp, alpha) + Math.pow(dqq, alpha);
+
+      int dpq = getDegree(nodep, nodeq.getColor());
+      int dqp = getDegree(nodeq, nodep.getColor());
+
+      double newdeg = Math.pow(dpq, alpha) + Math.pow(dqp, alpha);
+
+      //Task 1 done:
+//      if ((newdeg * this.T > olddeg) && (newdeg > highestBenefit)) {
+//        bestPartner = nodeq;
+//        highestBenefit = newdeg;
+//      }
+
+      //Task 2, anealing
+
+      double acceptProbability = Math.pow(Math.E, (newdeg - olddeg)/T);
+
+      if ((acceptProbability > random.nextDouble()) && (newdeg > highestBenefit)) {
+        bestPartner = nodeq;
+        highestBenefit = newdeg;
+      }
+
+
+    }
+
+
 
     return bestPartner;
   }
