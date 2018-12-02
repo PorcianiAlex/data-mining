@@ -19,6 +19,7 @@ public class Jabeja {
   private int round;
   private float T;
   private boolean resultFileCreated = false;
+  Random random = new Random();
 
   //-------------------------------------------------------------------
   public Jabeja(HashMap<Integer, Node> graph, Config config) {
@@ -33,6 +34,8 @@ public class Jabeja {
 
   //-------------------------------------------------------------------
   public void startJabeja() throws IOException {
+
+
     for (round = 0; round < config.getRounds(); round++) {
       for (int id : entireGraph.keySet()) {
         sampleAndSwap(id);
@@ -54,9 +57,11 @@ public class Jabeja {
 //      T -= config.getDelta();
 //    if (T < 1)
 //      T = 1;
-    double T_min = 0.000001;
+    double T_min = 0.0001;
     if (T > T_min) {
       T = T * config.getDelta();
+    } else {
+      T = (float) T_min;
     }
   }
 
@@ -96,7 +101,6 @@ public class Jabeja {
   }
 
   public Node findPartner(int nodeId, Integer[] nodes){
-    Random random = new Random();
     Node nodep = entireGraph.get(nodeId);
 
     Node bestPartner = null;
