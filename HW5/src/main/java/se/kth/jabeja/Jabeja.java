@@ -22,6 +22,8 @@ public class Jabeja {
     Random random = new Random();
     private float momentum = 1.0f;
     private float prevBenefit = 0;
+    private float dT = 0;
+    private float T_prev;
 
     //-------------------------------------------------------------------
     public Jabeja(HashMap<Integer, Node> graph, Config config) {
@@ -36,12 +38,12 @@ public class Jabeja {
 
     //-------------------------------------------------------------------
     public void startJabeja() throws IOException {
-//        T = 2;
+        T = 1;
 
-        for (round = 0; round < config.getRounds(); round++) {
+        for (round = 0; round < config.getRounds()+2000; round++) {
             for (int id : entireGraph.keySet()) {
                 sampleAndSwap(id);
-//        if (round ==400) T=2; //restart
+                if (round % 400 == 0) T=1; //restart
             }
 
             //one cycle for all nodes have completed.
@@ -58,18 +60,21 @@ public class Jabeja {
      * Simulated analealing cooling function
      */
     private void saCoolDown(){
-        // TODO for second task
-        //task 1
-        if (T > 1)
-            T -= config.getDelta();
-        if (T < 1)
-            T = 1;
+        // TODO for second tasl
+//        task 1
+//        if (T > 1)
+//            T *= 0.95f;
+//        if (T < 1)
+//            T = 1;
 
-//        task 2
-//        T *= config.getDelta();
-//        if (T <= 0.00001f) T = 0.0001f;
-
-
+////        task 2 momentums
+//        T_prev = T;
+//        T = (float) (T - config.getDelta() - T*config.getDelta() - (round * dT/Math.pow(Math.E, round)));
+//        dT = T - T_prev;
+//
+//      if (T <= 0.0000001f) T = 0.0000001f;
+        T = (float) (T * Math.pow(config.getDelta(), T/round));
+        //bonus
 //        double T_min = 0.0001;
 //        if (T > T_min) {
 //          T = T * 0.9f;
@@ -137,32 +142,37 @@ public class Jabeja {
             double newE = Math.pow(dpq, alpha) + Math.pow(dqp, alpha);
 
             //Task 1 done:
-            if ((newE * this.T > oldE) && (newE > highestBenefit)) {
+//            if ((newE * this.T > oldE) && (newE > highestBenefit)) {
+//                bestPartner = nodeq;
+//                highestBenefit = newE;
+//            }
+
+
+            //Task 2, simulated anealing
+//            double acceptProbability = Math.pow(Math.E, (newE - oldE) / T); //original annealing
+            double acceptProbability = 1 / (1 + Math.pow(Math.E, (oldE - newE) / T));
+            double r = random.nextDouble();
+//            System.out.println("r=" + r);
+//            System.out.println("ap = " + acceptProbability);
+            if ((acceptProbability > r) && (newE > highestBenefit)) {
                 bestPartner = nodeq;
                 highestBenefit = newE;
             }
 
 
-            //Task 2, simulated anealing
-//            double acceptProbability = Math.pow(Math.E, (newdeg - olddeg) / T);
-//
-//            if ((acceptProbability > random.nextDouble()) && (newdeg > highestBenefit)) {
-//                bestPartner = nodeq;
-//                highestBenefit = newdeg;
-//            }
-
-
             //Bonus
-//            momentum = Math.max(0, momentum * (float)(newdeg - prevBenefit));
-//            double acceptProbability = Math.pow(Math.E, (newdeg + momentum - olddeg)/T);
+//            momentum = Math.max(0, momentum * (float)(newE - prevBenefit));
 //
-//            if ((acceptProbability > random.nextDouble()) && (newdeg > highestBenefit)) {
+//            double acceptProbability = Math.pow(Math.E, (newE + momentum - oldE)/T);
+//
+//            if ((acceptProbability > random.nextDouble()) && (newE > highestBenefit)) {
 //                bestPartner = nodeq;
-//                highestBenefit = newdeg;
+//                highestBenefit = newE;
 //            }
 
             }
-//          prevBenefit = (float) highestBenefit;
+
+//            prevBenefit = (float) highestBenefit;
             return bestPartner;
         }
 
