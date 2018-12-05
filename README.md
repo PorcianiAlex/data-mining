@@ -1,4 +1,4 @@
-# Data-Mining  Homeworks
+# Data-Mining Labs
 
 ### 1. Shingling, MinHashing and LSH algorithms
 
@@ -7,5 +7,8 @@
 ### 3. Mining data streams: counting global graph triangles (TRIEST algorithm)
 
 ### 4. Graph Spectral Analysis: K-Eigenvector algorithm
+
+### 5. K-way Graph Partitioning Using JaBeJa
+
 
 
